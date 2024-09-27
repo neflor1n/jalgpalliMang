@@ -13,13 +13,14 @@ public class Team
     {
         Name = name;
         Color = color;
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++) // 10 полевых игроков - 10 väljakumängijat
         {
-            Players.Add(new Player($"Player {i + 1}"));
+            Players.Add(new Player($"Player {i + 1}", color));
         }
 
-        Players.Add(new Player("Goalkeeper", true));
+        Players.Add(new Player("Goalkeeper", color, true)); // Добавляем вратаря - Väravavahi lisamine
     }
+    
     public (double, double) GetBallPosition()
     {
         return Game?.Ball != null ? (Game.Ball.X, Game.Ball.Y) : (0.0, 0.0);
@@ -30,7 +31,7 @@ public class Team
         foreach (var player in Players)
         {
             player.SetPosition(rnd.Next(1, width - 1), rnd.Next(1, height - 1));
-            player.Team = this; // Устанавливаем команду игрока
+            player.Team = this; // Устанавливаем команду игрока - Mängija meeskonna seadistamine
         }
     }
 
@@ -40,7 +41,7 @@ public class Team
         player.Team = this;
     }
     
-    // Метод обновления позиции каждого игрока
+    // Метод обновления позиции каждого игрока - Iga mängija positsiooni värskendamise meetod
     public void Move(Ball ball)
     {
         foreach (var player in Players)
@@ -49,7 +50,7 @@ public class Team
         }
     }
     
-    // Метод получения ближайшего к мячу игрока
+    // Метод получения ближайшего к мячу игрока - Meetod mängija pallile lähemale viimiseks
     public Player GetClosestPlayerToBall(Ball ball)
     {
         Player closestPlayer = null;

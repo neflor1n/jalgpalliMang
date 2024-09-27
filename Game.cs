@@ -22,8 +22,8 @@ public class Game
 
     public int HomeScore { get; private set; } = 0; // Счет домашней команды
     public int AwayScore { get; private set; } = 0; // Счет выездной команды
-
-
+    
+    
     public Game()
     {
         GoalA = new Goal(10, 20, 0, 10);
@@ -32,7 +32,7 @@ public class Game
         ScoreA = 0;
         ScoreB = 0;
     }
-    // Обновление счета
+    // Обновление счета - Konto värskendus
     public void UpdateScore()
     {
         if (GoalA.IsBallInGoal(Ball.X, Ball.Y))
@@ -63,71 +63,71 @@ public class Game
         return (Stadium.Width - x, Stadium.Height - y);
     }
 
-    // установка позиций команд
+    // установка позиций команд - käsupositsioonide määramine
     public (double, double) GetPositionForTeam(Team team, double x, double y)
     {
         return team == HomeTeam ? (x, y) : GetPositionForAwayTeam(x, y);
     }
-    // Устанавливаем позицию мяча для команд
+    // Устанавливаем позицию мяча для команд - Meeskondade pallipositsiooni määramine
     public (double, double) GetBallPositionForTeam(Team team)
     {
         // Возвращаем позиции по осям, и мяча
         return GetPositionForTeam(team, Ball.X, Ball.Y);
     }
 
-    // Установка скорости мяча для команд 
+    // Установка скорости мяча для команд - Palli kiiruse määramine meeskondade jaoks
     public void SetBallSpeedForTeam(Team team, double vx, double vy)
     {
-        // если домашняя команда, то она вызывает скорость у мяча по оси Х и У
+        // если домашняя команда, то она вызывает скорость у мяча по оси Х и У - kui kodumeeskond, siis see põhjustab palli kiiruse piki X ja Y telge
         if (team == HomeTeam)
         {
             Ball.SetSpeed(vx, vy);
         }
-        // Это означает, что скорость мяча устанавливается в противоположном направлении:
         else
         {
             Ball.SetSpeed(-vx, -vy);
         }
     }
-    // Движение команд и мяча
+    // Движение команд и мяча - Meeskondade ja palli liikumine
     public void Move()
     {
-        HomeTeam.Move(Ball); // Передаем мяч в метод движения команды
-        AwayTeam.Move(Ball); // Передаем мяч в метод движения команды
+        // Передаем мяч в метод движения команды - Sööda pall võistkonna liikumismeetodile
+        HomeTeam.Move(Ball); 
+        AwayTeam.Move(Ball); 
         Ball.Move();
 
         CheckGoals();
     }
     private void CheckGoals()
     {
-        // Проверка, забит ли гол
-        if (Ball.X <= 0) // Если мяч зашел в ворота домашней команды
+        // Проверка, забит ли гол // Kontrollige, kas värav on löödud
+        if (Ball.X <= 0) // Если мяч зашел в ворота домашней команды - Kui pall siseneb kodumeeskonna väravasse
         {
             AwayScore++;
             ResetBall();
         }
-        else if (Ball.X >= Stadium.Width - 1) // Если мяч зашел в ворота выездной команды
+        else if (Ball.X >= Stadium.Width - 1) // Если мяч зашел в ворота выездной команды // Kui pall sisenes külalismeeskonna väravasse
         {
             HomeScore++;
             ResetBall();
         }
     }
-    // Сброс позиции мяча после гола
+    // Сброс позиции мяча после гола - Palli positsiooni lähtestamine pärast väravat
     private void ResetBall()
     {
         Ball.X = 50;
         Ball.Y = 50;
-        Ball.SetSpeed(0, 0); // Остановка мяча
+        Ball.SetSpeed(0, 0); // Остановка мяча - Palli peatamine
     }
     
-    // Отрисовка поля, ворот, игроков и счета
+    // Отрисовка поля, ворот, игроков и счета - Väljaku, väravate, mängijate ja skoori joonis
     public void DrawField()
     {
         Console.Clear();
 
-        DrawBoundary(); // Отрисовка границ поля.
-        DrawCenterCircle(); // Отрисовка окружности в центре поля.
-        DrawGoals(); // Отрисовка ворот.
+        DrawBoundary(); // Отрисовка границ поля. - Põllupiiride joonistamine.
+        DrawCenterCircle(); // Отрисовка окружности в центре поля. - Ringi joonistamine välja keskele.
+        DrawGoals(); // Отрисовка ворот. - Värava joonistamine.
 
         foreach (var team in Teams)
         {
@@ -135,27 +135,27 @@ public class Game
             {
                 var position = player.GetAbsolutePosition();
                 SafeSetCursorPosition((int)position.Item1, (int)position.Item2, player.Color);
-                Console.Write('P'); // Представление игрока
+                Console.Write('P'); // Представление игрока - Mängija vaade
             }
         }
 
         SafeSetCursorPosition((int)Ball.X, (int)Ball.Y, ConsoleColor.Yellow);
-        Console.Write('B'); // Представление мяча
+        Console.Write('B'); // Представление мяча Balli esitlus
 
         SafeSetCursorPosition(0, 0, ConsoleColor.White);
-        Console.Write($"Score A: {ScoreA} - Score B: {ScoreB}"); // Вывод текущего счета
+        Console.Write($"Score A: {ScoreA} - Score B: {ScoreB}"); // Вывод текущего счета - Arvelduskonto väljavõtmine
 
         Console.ResetColor();
     }
     
-    // Метод рисования ворот
+    // Метод рисования ворот - Värava joonistamise meetod
     private void DrawGoals()
     {
         DrawGoal(GoalA, ConsoleColor.Red);
         DrawGoal(GoalB, ConsoleColor.Blue);
     }
     
-    // Метод рисования окружности в центре поля
+    // Метод рисования окружности в центре поля - Meetod ringi keskele joonistamiseks
     private void DrawCenterCircle()
     {
         int centerX = 50;
@@ -171,7 +171,7 @@ public class Game
             Console.Write('O');
         }
     }
-    // Метод рисования границ поля
+    // Метод рисования границ поля - Põllupiiride tõmbamise meetod
     private void DrawBoundary()
     {
         for (int i = 0; i < 100; i++)
@@ -191,7 +191,7 @@ public class Game
         }
     }
     
-    // Метод рисования одной цели (ворот)
+    // Метод рисования одной цели (ворот) - Ühe värava tõmbamise meetod (värav)
     private void DrawGoal(Goal goal, ConsoleColor color)
     {
         Console.ForegroundColor = color;
@@ -208,16 +208,16 @@ public class Game
     }
     public void DisplayScore()
     {
-        Console.SetCursorPosition(0, Stadium.Height + 1); // Позиция для отображения счета
+        Console.SetCursorPosition(0, Stadium.Height + 1); // Позиция для отображения счета - Positsioon skoori kuvamiseks
         Console.WriteLine($"Score: Home {HomeScore} - Away {AwayScore}");
     }
     
     public void Update()
     {
-        Ball.UpdatePosition(); // Обновление позиции мяча
-        UpdateScore(); // Обновление счета
+        Ball.UpdatePosition(); // Обновление позиции мяча - Palli asukoha värskendus
+        UpdateScore(); // Обновление счета - Konto värskendus
     }
-    // Безопасная установка позиции курсора и цвета текста.
+    // Безопасная установка позиции курсора и цвета текста. - Määrake kursori asukoht ja teksti värv ohutult.
     private void SafeSetCursorPosition(int left, int top, ConsoleColor color)
     {
         if (left >= 0 && left < Console.WindowWidth && top >= 0 && top < Console.WindowHeight)

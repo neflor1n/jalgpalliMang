@@ -37,43 +37,44 @@ public class Ball
     
     public void UpdatePosition()
     {
-        // Обновление позиции мяча
+        // Обновление позиции мяча // Värskenda palli asendit
         X += Vx;
         Y += Vy;
 
-        // Применение трения к скорости
+        // Применение трения к скорости // Rakenda kiirusele hõõrdumist
         Vx *= Friction;
         Vy *= Friction;
 
-        // Проверка отскока от штанги ворот
-        // Левая штанга ворот
+        // Проверка отскока от штанги ворот // Tagalöögi kontrollimine väravapostist
+        // Левая штанга ворот // Vasak väravapost
         if (X <= 1 && (Y < (FieldHeight - GoalHeight) / 2 || Y > (FieldHeight + GoalHeight) / 2))
         {
-            Vx = -Vx; // Инвертировать скорость по X для отскока
-            X = 1;    // Корректировка позиции мяча
+            Vx = -Vx; // Инвертировать скорость по X для отскока // Pöörake X kiirus põrke jaoks
+            X = 1;    // Корректировка позиции мяча // Reguleerige palli asendit
         }
-        // Правая штанга ворот
+        // Правая штанга ворот // Parem väravapost
         if (X >= FieldWidth - 1 && (Y < (FieldHeight - GoalHeight) / 2 || Y > (FieldHeight + GoalHeight) / 2))
         {
-            Vx = -Vx; // Инвертировать скорость по X для отскока
-            X = FieldWidth - 1; // Корректировка позиции мяча
+            Vx = -Vx; // Инвертировать скорость по X для отскока // Pöörake X kiirus põrke jaoks
+            X = FieldWidth - 1; // Корректировка позиции мяча // Reguleerige palli asendit
         }
 
-        // Отскок мяча от верхней и нижней границ поля
-        // Верхняя граница поля
+        // Отскок мяча от верхней и нижней границ поля // Palli põrgatamine väljaku ülemiselt ja alumiselt piirilt
+        // Верхняя граница поля // Välja ülemine piir
         if (Y < 1)
         {
-            Vy = -Vy; // Инвертировать скорость по Y для отскока
-            Y = 1;    // Корректировка позиции мяча
+            Vy = -Vy; // Инвертировать скорость по Y для отскока // Pöörake Y kiirus põrke jaoks
+            Y = 1;    // Корректировка позиции мяча // Reguleerige palli asendit
         }
         // Нижняя граница поля
         if (Y > FieldHeight - 1)
         {
-            Vy = -Vy; // Инвертировать скорость по Y для отскока
-            Y = FieldHeight - 1; // Корректировка позиции мяча
+            Vy = -Vy; // Инвертировать скорость по Y для отскока // Pöörake Y kiirus põrke jaoks
+            Y = FieldHeight - 1; // Корректировка позиции мяча // Reguleerige palli asendit
         }
 
         // Отладочные сообщения для отображения позиции и скорости мяча
+        // Silumissõnumid palli asukoha ja kiiruse kuvamiseks
         Console.SetCursorPosition(0, 1);
         Console.WriteLine($"Ball Position: ({X:N2}, {Y:N2}), Speed: ({Vx:N2}, {Vy:N2}) ");
     }
@@ -83,7 +84,7 @@ public class Ball
         X += _vx;
         Y += _vy;
 
-        // Убедимся, что мяч остается внутри стадиона
+        // Убедимся, что мяч остается внутри стадиона // Veenduge, et pall jääks staadionile
         if (!_game.Stadium.IsIn(X, Y))
         {
             _vx = 0;

@@ -22,7 +22,7 @@ public class Stadium
 
     public void Draw(List<Player> players, Ball ball)
     {
-        Console.Clear(); // Очищаем консоль перед отрисовкой
+        Console.Clear(); // Очищаем консоль перед отрисовкой - Konsooli tühjendamine enne renderdamist
 
         for (int y = 0; y < Height; y++)
         {
@@ -35,20 +35,20 @@ public class Stadium
                     if (player != null)
                     {
                         Console.ForegroundColor = player.Color;
-                        Console.Write("P"); // Отображаем игрока
+                        Console.Write("P"); // Отображаем игрока - Mängija kuvamine
                     }
                     else if ((int)ball.X == x && (int)ball.Y == y)
                     {
                         Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.Write("B"); // Отображаем мяч
+                        Console.Write("B"); // Отображаем мяч - Palli näitamine
                     }
                     else
                     {
-                        Console.Write(" "); // Пустое пространство
+                        Console.Write(" "); // Пустое пространство - tühi ruum
                     }
                 }
             }
-            Console.WriteLine(); // Переход на новую строку
+            Console.WriteLine(); // Переход на новую строку - Uus rida
         }
     }
 
@@ -62,7 +62,7 @@ public class Stadium
     {
         int centerX = Width / 2;
         int centerY = Height / 2;
-        int radius = 4; // Радиус центрального круга
+        int radius = 4; // Радиус центрального круга - Keskringi raadius
         return (x - centerX) * (x - centerX) + (y - centerY) * (y - centerY) <= radius * radius;
     }
 }

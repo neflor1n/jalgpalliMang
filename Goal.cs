@@ -2,10 +2,10 @@ namespace jalgpalliMang;
 
 public class Goal
 {
-    // Координаты топа и высоты ворот
+    // Координаты топа и высоты ворот - Värava ülaosa ja kõrguse koordinaadid
     public double Top { get; }
     public double Bottom { get; }
-    // Ширина ворот
+    // Ширина ворот - Värava laius
     public double Left { get; }
     public double Right { get; }
 
@@ -17,7 +17,7 @@ public class Goal
         Right = right;
     }
 
-    // Проверка, находится ли мяч в воротах
+    // Проверка, находится ли мяч в воротах - Kontrollimine, kas pall on väravas
     public bool IsBallInGoal(double ballX, double ballY)
     {
         return ballX >= Left && ballX <= Right && ballY >= Top && ballY <= Bottom;
