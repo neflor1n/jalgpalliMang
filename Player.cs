@@ -5,6 +5,8 @@ namespace jalgpalliMang;
 
 public class Player
 {
+    
+    
     // Mängija omaduste kirjutamine
     // Nimi 
     public string Name { get; }
@@ -12,7 +14,6 @@ public class Player
     public double X { get; private set; }
     public double Y { get; private set; }
     // Скорость шага движения
-    private double _vx, _vy;
     
     public Team? Team { get; set; } = null;
     public bool IsGoalkeeper { get; }
@@ -21,9 +22,7 @@ public class Player
     // Loome mängija, palli ja selle vahemaa juhusliku kiiruse
     private const double MaxSpeed = 5;
     private const double MaxKickSpeed = 25;
-    private const double BallKickDistance = 10;
-
-
+    private const double BallKickDistance = 10; // Расстояние, с которого игрок может ударить мяч
     private Random _random = new Random();
 
     // Mängija konstruktori loomine
@@ -51,17 +50,9 @@ public class Player
     // получаем изначальную позицию
     public (double, double) GetAbsolutePosition()
     {
-        return Team?.Game.GetPositionForTeam(Team, X, Y) ?? (X, Y);
+        return (X, Y);
     }
 
-    // Loo vahemaa konstruktor
-    public double GetDistanceToBall()
-    {
-        var ballPosition = Team?.GetBallPosition() ?? (0.0, 0.0);
-        var dx = ballPosition.Item1 - X;
-        var dy = ballPosition.Item2 - Y;
-        return Math.Sqrt(dx * dx + dy * dy);
-    }
 
 
     // Движение игрока к мячу
@@ -75,9 +66,12 @@ public class Player
         {
             double moveX = (dx / distance) * MaxSpeed;
             double moveY = (dy / distance) * MaxSpeed;
-
             X += moveX;
             Y += moveY;
+
+            // Отладочные сообщения
+            Console.SetCursorPosition(0, 3);
+            Console.WriteLine($"{Name} движется к мячу. Позиция игрока: ({X:N2}, {Y:N2})");
         }
     }
 
@@ -85,33 +79,39 @@ public class Player
     public void Move(Ball ball)
     {
 
-        // Проверяем, является ли игрок ближайшим к мячу
-        if (Team.GetClosestPlayerToBall(ball) != this)
+        // Если это не ближайший игрок к мячу, то он не движется
+        if (Team != null && Team.GetClosestPlayerToBall(ball) != this)
         {
-            return; // Не делаем ничего, если не самый близкий
+            return;
         }
 
-        // Двигаемся к мячу
         MoveTowardsBall(ball);
 
-        // Если игрок в пределах расстояния для удара, бьем по мячу
-        if (GetDistanceToBall(ball) < BallKickDistance)
+        // Если игрок достаточно близко к мячу, он его ударяет
+        if (GetDistanceToBall(ball) < BallKickDistance && (ball.Vx == 0 && ball.Vy == 0))
         {
             KickBall(ball);
         }
 
     }
-    private double GetDistanceToBall(Ball ball)
+    // Метод получения расстояния до мяча
+    public double GetDistanceToBall(Ball ball)
     {
         double dx = ball.X - X;
         double dy = ball.Y - Y;
         return Math.Sqrt(dx * dx + dy * dy);
     }
-
+    
+    // Метод пина мяча
     private void KickBall(Ball ball)
     {
-        double kickX = (new Random().NextDouble() - 0.5) * MaxKickSpeed;
-        double kickY = (new Random().NextDouble() - 0.5) * MaxKickSpeed;
+        // Установка случайной скорости мяча при ударе
+        double kickX = (_random.NextDouble() - 0.5) * MaxKickSpeed;
+        double kickY = (_random.NextDouble() - 0.5) * MaxKickSpeed;
         ball.SetSpeed(kickX, kickY);
+
+        // Отладочные сообщения
+        Console.SetCursorPosition(0, 2);
+        Console.Write($"Кик от {Name}: Скорость мяча ({kickX:N2}, {kickY:N2})");
     }
 }

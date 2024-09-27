@@ -13,6 +13,12 @@ public class Team
     {
         Name = name;
         Color = color;
+        for (int i = 0; i < 5; i++)
+        {
+            Players.Add(new Player($"Player {i + 1}"));
+        }
+
+        Players.Add(new Player("Goalkeeper", true));
     }
     public (double, double) GetBallPosition()
     {
@@ -24,6 +30,7 @@ public class Team
         foreach (var player in Players)
         {
             player.SetPosition(rnd.Next(1, width - 1), rnd.Next(1, height - 1));
+            player.Team = this; // Устанавливаем команду игрока
         }
     }
 
@@ -32,7 +39,8 @@ public class Team
         Players.Add(player);
         player.Team = this;
     }
-
+    
+    // Метод обновления позиции каждого игрока
     public void Move(Ball ball)
     {
         foreach (var player in Players)
@@ -40,10 +48,12 @@ public class Team
             player.Move(ball);
         }
     }
+    
+    // Метод получения ближайшего к мячу игрока
     public Player GetClosestPlayerToBall(Ball ball)
     {
         Player closestPlayer = null;
-        double bestDistance = Double.MaxValue;
+        double bestDistance = double.MaxValue;
 
         foreach (var player in Players)
         {
@@ -56,19 +66,5 @@ public class Team
         }
 
         return closestPlayer;
-    }
-    public double GetDistanceToBall()
-    {
-        var ballPosition = Team!.GetBallPosition(); // Предполагается, что метод GetBallPosition возвращает позицию мяча
-        var dx = ballPosition.Item1 - X;
-        var dy = ballPosition.Item2 - Y;
-        return Math.Sqrt(dx * dx + dy * dy);
-    }
-
-    public double GetDistanceToBall(Ball ball)
-    {
-        double dx = ball.X - X;
-        double dy = ball.Y - Y;
-        return Math.Sqrt(dx * dx + dy * dy);
     }
 }

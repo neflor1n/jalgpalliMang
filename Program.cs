@@ -1,36 +1,43 @@
 ﻿using jalgpalliMang;
+using System.Threading;
+using System;
 
-public class Program
-{
-    public static void Main(string[] args)
+namespace jalgpalliMang {
+    public class Program
     {
-        Console.SetWindowSize(200, 50);
-        Stadium stadium = new Stadium(80, 25);
-
-        // Создаем команды
-        Game game = new Game(new Team("Home", ConsoleColor.Yellow), new Team("Away", ConsoleColor.Red), stadium);
-
-        // Добавляем игроков (10 полевых + 1 вратарь для каждой команды)
-        for (int i = 1; i <= 10; i++)
+        public static void Main(string[] args)
         {
-            game.HomeTeam.AddPlayer(new Player($"Home Player {i}"));
-            game.AwayTeam.AddPlayer(new Player($"Away Player {i}"));
-        }
+            // Создание нового экземпляра игры
+            var game = new Game();
 
-        // Добавляем вратарей
-        game.HomeTeam.AddPlayer(new Player("Home Goalkeeper", true));
-        game.AwayTeam.AddPlayer(new Player("Away Goalkeeper", true));
+            // Создание двух команд, задание цветов и привязка их к игре
+            var teamA = new Team("Team A", ConsoleColor.Red) { Game = game };
+            var teamB = new Team("Team B", ConsoleColor.Blue) { Game = game };
 
-        // Начинаем игру
-        game.Start();
+            // Добавление команд в список команд игры
+            game.Teams.Add(teamA);
+            game.Teams.Add(teamB);
 
-        // Игровой цикл
-        while (true)
-        {
-            game.Move(); // Двигаем команды и мяч
-            stadium.Draw(game.HomeTeam.Players.Concat(game.AwayTeam.Players).ToList(), game.Ball); // Рисуем стадион
-            game.DisplayScore(); // Отображаем счет
-            System.Threading.Thread.Sleep(100); // Контроль скорости игрового цикла
+            // Задание начальных позиций игроков для всех команд
+            teamA.StartGame(100, 30);
+            teamB.StartGame(100, 30);
+
+            // Бесконечный игровой цикл
+            while (true)
+            {
+                // Обновление состояния игры (положение мяча и счет)
+                game.Update();
+
+                // Обновление позиций игроков на основе положения мяча
+                teamA.Move(game.Ball);
+                teamB.Move(game.Ball);
+
+                // Отрисовка поля, включая игроков, мяч и ворота
+                game.DrawField();
+
+                // Задержка на 500 миллисекунд перед следующим обновлением
+                Thread.Sleep(500);
+            }
         }
     }
 }
