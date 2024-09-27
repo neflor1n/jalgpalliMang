@@ -13,13 +13,16 @@ public class Game
     // Palli omaduste
     public Ball Ball { get; private set; }
 
+    public int HomeScore { get; private set; } = 0; // Счет домашней команды
+    public int AwayScore { get; private set; } = 0; // Счет выездной команды
+
+
+
     // Mängu konstruktori
     public Game(Team homeTeam, Team awayTeam, Stadium stadium)
     {
         HomeTeam = homeTeam;
-        homeTeam.Game = this;
         AwayTeam = awayTeam;
-        awayTeam.Game = this;
         Stadium = stadium;
     }
 
@@ -39,6 +42,7 @@ public class Game
     {
         return (Stadium.Width - x, Stadium.Height - y);
     }
+
     // установка позиций команд
     public (double, double) GetPositionForTeam(Team team, double x, double y)
     {
@@ -68,8 +72,34 @@ public class Game
     // Движение команд и мяча
     public void Move()
     {
-        HomeTeam.Move();
-        AwayTeam.Move();
+        HomeTeam.Move(Ball); // Передаем мяч в метод движения команды
+        AwayTeam.Move(Ball); // Передаем мяч в метод движения команды
         Ball.Move();
+
+        CheckGoals();
+    }
+    private void CheckGoals()
+    {
+        // Проверка, забит ли гол
+        if (Ball.X <= 0) // Если мяч зашел в ворота домашней команды
+        {
+            AwayScore++;
+            ResetBall();
+        }
+        else if (Ball.X >= Stadium.Width - 1) // Если мяч зашел в ворота выездной команды
+        {
+            HomeScore++;
+            ResetBall();
+        }
+    }
+    private void ResetBall()
+    {
+        Ball = new Ball(Stadium.Width / 2, Stadium.Height / 2, this); // Сбрасываем мяч в центр
+    }
+
+    public void DisplayScore()
+    {
+        Console.SetCursorPosition(0, Stadium.Height + 1); // Позиция для отображения счета
+        Console.WriteLine($"Score: Home {HomeScore} - Away {AwayScore}");
     }
 }

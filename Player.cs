@@ -15,6 +15,8 @@ public class Player
     private double _vx, _vy;
     
     public Team? Team { get; set; } = null;
+    public bool IsGoalkeeper { get; }
+    public ConsoleColor Color { get; }
 
     // Loome mängija, palli ja selle vahemaa juhusliku kiiruse
     private const double MaxSpeed = 5;
@@ -31,12 +33,11 @@ public class Player
     }
     
     // Конструктор позиции, команды игрока 
-    public Player(string name, double x, double y, Team team)
+    public Player(string name, bool isGoalkeeper = false)
     {
         Name = name;
-        X = x;
-        Y = y;
-        Team = team;
+        IsGoalkeeper = isGoalkeeper;
+        Color = isGoalkeeper ? ConsoleColor.Black : ConsoleColor.White; //
     }
 
 
@@ -50,62 +51,67 @@ public class Player
     // получаем изначальную позицию
     public (double, double) GetAbsolutePosition()
     {
-        return Team!.Game.GetPositionForTeam(Team, X, Y);
+        return Team?.Game.GetPositionForTeam(Team, X, Y) ?? (X, Y);
     }
-    
+
     // Loo vahemaa konstruktor
     public double GetDistanceToBall()
     {
-
-        var ballPosition = Team!.GetBallPosition();
+        var ballPosition = Team?.GetBallPosition() ?? (0.0, 0.0);
         var dx = ballPosition.Item1 - X;
         var dy = ballPosition.Item2 - Y;
         return Math.Sqrt(dx * dx + dy * dy);
     }
 
-    // Движение игрока к мячу
-    public void MoveTowardsBall()
-    {
 
-        var ballPosition = Team!.GetBallPosition();
-        var dx = ballPosition.Item1 - X;
-        var dy = ballPosition.Item2 - Y;
-        var ratio = Math.Sqrt(dx * dx + dy * dy) / MaxSpeed;
-        _vx = dx / ratio;
-        _vy = dy / ratio;
+    // Движение игрока к мячу
+    public void MoveTowardsBall(Ball ball)
+    {
+        double dx = ball.X - X;
+        double dy = ball.Y - Y;
+        double distance = Math.Sqrt(dx * dx + dy * dy);
+
+        if (distance > 0)
+        {
+            double moveX = (dx / distance) * MaxSpeed;
+            double moveY = (dy / distance) * MaxSpeed;
+
+            X += moveX;
+            Y += moveY;
+        }
     }
 
     // Loo liikuda konstruktor
-    public void Move()
+    public void Move(Ball ball)
     {
 
-        // See kood peatab mängija liikumise, kui ta ei ole oma meeskonnas pallile kõige lähemal.
-        if (Team.GetClosestPlayerToBall() != this)
+        // Проверяем, является ли игрок ближайшим к мячу
+        if (Team.GetClosestPlayerToBall(ball) != this)
         {
-            _vx = 0;
-            _vy = 0;
+            return; // Не делаем ничего, если не самый близкий
         }
 
-        
-        if (GetDistanceToBall() < BallKickDistance)
+        // Двигаемся к мячу
+        MoveTowardsBall(ball);
+
+        // Если игрок в пределах расстояния для удара, бьем по мячу
+        if (GetDistanceToBall(ball) < BallKickDistance)
         {
-            Team.SetBallSpeed(
-                MaxKickSpeed * _random.NextDouble(),
-                MaxKickSpeed * (_random.NextDouble() - 0.5)
-                );
+            KickBall(ball);
         }
 
-        var newX = X + _vx;
-        var newY = Y + _vy;
-        var newAbsolutePosition = Team.Game.GetPositionForTeam(Team, newX, newY);
-        if (Team.Game.Stadium.IsIn(newAbsolutePosition.Item1, newAbsolutePosition.Item2))
-        {
-            X = newX;
-            Y = newY;
-        }
-        else
-        {
-            _vx = _vy = 0;
-        }
+    }
+    private double GetDistanceToBall(Ball ball)
+    {
+        double dx = ball.X - X;
+        double dy = ball.Y - Y;
+        return Math.Sqrt(dx * dx + dy * dy);
+    }
+
+    private void KickBall(Ball ball)
+    {
+        double kickX = (new Random().NextDouble() - 0.5) * MaxKickSpeed;
+        double kickY = (new Random().NextDouble() - 0.5) * MaxKickSpeed;
+        ball.SetSpeed(kickX, kickY);
     }
 }

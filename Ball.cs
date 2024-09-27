@@ -1,4 +1,4 @@
-﻿using jalgpalliMang;
+﻿using System;
 
 namespace jalgpalliMang;
 
@@ -8,7 +8,6 @@ public class Ball
     public double Y { get; private set; }
 
     private double _vx, _vy;
-
     private Game _game;
 
     public Ball(double x, double y, Game game)
@@ -26,18 +25,14 @@ public class Ball
 
     public void Move()
     {
-        double newX = X + _vx;
-        double newY = Y + _vy;
-        if (_game.Stadium.IsIn(newX, newY))
-        {
-            X = newX;
-            Y = newY;
-        }
-        else
+        X += _vx;
+        Y += _vy;
+
+        // Убедимся, что мяч остается внутри стадиона
+        if (!_game.Stadium.IsIn(X, Y))
         {
             _vx = 0;
             _vy = 0;
         }
     }
-
 }
